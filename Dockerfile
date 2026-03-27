@@ -1,6 +1,7 @@
 FROM php:8.2-cli
 
 # Install dependencies
+RUN touch database/database.sqlite && php artisan migrate
 RUN apt-get update && apt-get install -y \
     unzip curl git
 
