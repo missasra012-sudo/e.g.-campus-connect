@@ -4,31 +4,46 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\ProfileController;
 
-// 🔐 Auth
+// =========================
+// 🔐 AUTH ROUTES
+// =========================
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// 📢 Public notices
+// =========================
+// 📢 PUBLIC NOTICE ROUTES
+// =========================
 Route::get('/notices', [NoticeController::class, 'index']);
 Route::get('/notices/{id}', [NoticeController::class, 'show']);
 
-// 🔒 Protected (Sanctum)
+// =========================
+// 🔒 PROTECTED ROUTES (Requires Sanctum Token)
+// =========================
 Route::middleware('auth:sanctum')->group(function () {
 
+    // 📢 Notice CRUD (Teacher/HOD)
     Route::post('/notices', [NoticeController::class, 'store']);
     Route::put('/notices/{id}', [NoticeController::class, 'update']);
     Route::delete('/notices/{id}', [NoticeController::class, 'destroy']);
 
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::put('/notices/{id}', [NoticeController::class, 'update']);
-    Route::delete('/notices/{id}', [NoticeController::class, 'destroy']);
-
-});
-Route::middleware('auth:sanctum')->group(function () {
+    // 🖼️ Images CRUD
     Route::get('/images', [ImageController::class, 'index']);
     Route::post('/images', [ImageController::class, 'store']);
     Route::get('/images/{id}', [ImageController::class, 'show']);
-    Route::post('/images/{id}', [ImageController::class, 'update']); // ya PUT
+    Route::put('/images/{id}', [ImageController::class, 'update']);  
     Route::delete('/images/{id}', [ImageController::class, 'destroy']);
+
+    // 🚪 Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+    Route::middleware('auth:sanctum')->post('/upload-profile',
+    [ProfileController::class, 'uploadProfile']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/hod/pending-students', [AuthController::class, 'pendingStudents']);
+    Route::post('/hod/approve-student/{id}', [AuthController::class, 'approveStudent']);
+    Route::post('/hod/reject-student/{id}', [AuthController::class, 'rejectStudent']);
+
 });

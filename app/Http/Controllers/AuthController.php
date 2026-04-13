@@ -25,6 +25,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'status' => $request->role === 'student' ? 'pending' : 'approved',
             'enrollment_no' => $request->role === 'student'
                 ? $request->enrollment_no
                 : null
@@ -39,26 +40,29 @@ class AuthController extends Controller
     // ✅ LOGIN
     public function login(Request $request)
     {
-        // validation
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        // check credentials
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
-        // get logged in user
-        $user = Auth::user();
+        // 🔥 approval check
+        if ($user->role === 'student' && $user->status !== 'approved') {
+            return response()->json([
+                'message' => 'Your account is pending approval by HOD'
+            ], 403);
+        }
 
-        // delete old tokens (optional but recommended)
+        Auth::login($user);
+
         $user->tokens()->delete();
-
-        // create new token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -66,5 +70,57 @@ class AuthController extends Controller
             'token' => $token,
             'user' => $user
         ], 200);
+    }
+
+    // ✅ GET ALL PENDING STUDENTS
+    public function pendingStudents()
+    {
+        $students = User::where('role', 'student')
+            ->where('status', 'pending')
+            ->get();
+
+        return response()->json($students);
+    }
+
+    // ✅ APPROVE STUDENT
+    public function approveStudent($id)
+    {
+        $student = User::find($id);
+
+        if (!$student) {
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+
+        $student->status = 'approved';
+        $student->save();
+
+        return response()->json([
+            'message' => 'Student approved successfully'
+        ]);
+    }
+
+    // ❌ REJECT STUDENT
+    public function rejectStudent($id)
+    {
+        $student = User::find($id);
+
+        if (!$student) {
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+
+        $student->status = 'rejected';
+        $student->save();
+
+        return response()->json([
+            'message' => 'Student rejected successfully'
+        ]);
+    }
+
+    // ✅ PROFILE
+    public function profile()
+    {
+        return response()->json([
+            'user' => auth()->user()
+        ]);
     }
 }

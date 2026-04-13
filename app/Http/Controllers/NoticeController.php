@@ -4,123 +4,109 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Notice;
-use Illuminate\Support\Facades\Auth;
 
 class NoticeController extends Controller
 {
-    
-    // 📌 Get all notices
+    // 📄 Get all notices (Public)
     public function index()
     {
-        return response()->json(Notice::all());
+        $notices = Notice::latest()->get();
+
+        return response()->json($notices);
     }
 
-    // 📌 Create notice
-    public function store(Request $request)
-    {
-        // ✅ Get logged-in user
-        $user = Auth::user();
-
-        // ❌ अगर user login nahi hai
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated'
-            ], 401);
-        }
-
-        // ❌ Student ko block karo
-        if ($user->role === 'student') {
-            return response()->json([
-                'message' => 'Only teachers or HOD can add notices'
-            ], 403);
-        }
-
-        // ✅ Validation
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
-
-        // ✅ Create notice
-        $notice = Notice::create([
-            'title' => $request->title,
-            'description' => $request->description,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'data' => $notice
-        ], 201);
-    }
-
-    // 📌 Show single notice
+    // 📄 Get single notice
     public function show($id)
     {
-        $notice = Notice::findOrFail($id);
+        $notice = Notice::find($id);
+
+        if (!$notice) {
+            return response()->json(['message' => 'Notice not found'], 404);
+        }
 
         return response()->json($notice);
     }
 
-    // 📌 Update notice
-    public function update(Request $request, $id)
+    // ➕ Create notice (Protected)
+    public function store(Request $request)
     {
-        dd($request->all());
-        $user = Auth::user();
-
-        // ❌ Login check
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated'
-            ], 401);
-        }
-
-        // ❌ Student block
-        if ($user->role === 'student') {
-            return response()->json([
-                'message' => 'Only teachers or HOD can update notices'
-            ], 403);
-        }
-
-        $notice = Notice::findOrFail($id);
-
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string'
         ]);
 
-        $notice->update($request->only(['title', 'description']));
+        $user = auth()->user();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Notice updated successfully',
-            'data' => $notice
-        ]);
-    }
-
-    // 📌 Delete notice
-    public function destroy($id)
-    {
-        $user = Auth::user();
-
-        // ❌ Login check
-        if (!$user) {
+        // only teacher/hod allowed
+        if (!in_array($user->role, ['teacher', 'hod'])) {
             return response()->json([
-                'message' => 'Unauthenticated'
-            ], 401);
-        }
-
-        // ❌ Student block
-        if ($user->role === 'student') {
-            return response()->json([
-                'message' => 'Only teachers or HOD can delete notices'
+                'message' => 'Unauthorized: Only teacher or HOD can create notice'
             ], 403);
         }
 
-        $notice = Notice::findOrFail($id);
+        $notice = Notice::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'created_by' => $user->id
+        ]);
+
+        return response()->json([
+            'message' => 'Notice created successfully',
+            'notice' => $notice
+        ], 201);
+    }
+
+    // ✏️ Update notice
+    public function update(Request $request, $id)
+    {
+        $notice = Notice::find($id);
+
+        if (!$notice) {
+            return response()->json(['message' => 'Notice not found'], 404);
+        }
+
+        $user = auth()->user();
+
+        // only creator or hod
+        if ($user->id !== $notice->created_by && $user->role !== 'hod') {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string'
+        ]);
+
+        $notice->update($request->only('title', 'description'));
+
+        return response()->json([
+            'message' => 'Notice updated successfully',
+            'notice' => $notice
+        ]);
+    }
+
+    // ❌ Delete notice
+    public function destroy($id)
+    {
+        $notice = Notice::find($id);
+
+        if (!$notice) {
+            return response()->json(['message' => 'Notice not found'], 404);
+        }
+
+        $user = auth()->user();
+
+        if ($user->id !== $notice->created_by && $user->role !== 'hod') {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         $notice->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Notice deleted successfully'
         ]);
     }
