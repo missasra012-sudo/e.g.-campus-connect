@@ -10,8 +10,7 @@ class NoticeController extends Controller
     // 📄 Get all notices (Public)
     public function index()
     {
-        $notices = Notice::latest()->get();
-        return response()->json($notices);
+        return response()->json(Notice::latest()->get());
     }
 
     // 📄 Get single notice
@@ -20,7 +19,9 @@ class NoticeController extends Controller
         $notice = Notice::find($id);
 
         if (!$notice) {
-            return response()->json(['message' => 'Notice not found'], 404);
+            return response()->json([
+                'message' => 'Notice not found'
+            ], 404);
         }
 
         return response()->json($notice);
@@ -29,19 +30,14 @@ class NoticeController extends Controller
     // ➕ Create notice (Protected)
     public function store(Request $request)
     {
-        // ✅ Check auth
-        if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
-        }
-
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string'
         ]);
 
-        $user = auth()->user();
+        $user = auth()->user(); // middleware se already authenticated
 
-        // ✅ Role check
+        // ✅ Only teacher or HOD
         if (!in_array($user->role, ['teacher', 'hod'])) {
             return response()->json([
                 'message' => 'Unauthorized: Only teacher or HOD can create notice'
@@ -63,15 +59,12 @@ class NoticeController extends Controller
     // ✏️ Update notice
     public function update(Request $request, $id)
     {
-        // ✅ Check auth
-        if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
-        }
-
         $notice = Notice::find($id);
 
         if (!$notice) {
-            return response()->json(['message' => 'Notice not found'], 404);
+            return response()->json([
+                'message' => 'Notice not found'
+            ], 404);
         }
 
         $user = auth()->user();
@@ -88,7 +81,7 @@ class NoticeController extends Controller
             'description' => 'sometimes|string'
         ]);
 
-        $notice->update($request->only('title', 'description'));
+        $notice->update($request->only(['title', 'description']));
 
         return response()->json([
             'message' => 'Notice updated successfully',
@@ -99,15 +92,12 @@ class NoticeController extends Controller
     // ❌ Delete notice
     public function destroy($id)
     {
-        // ✅ Check auth
-        if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
-        }
-
         $notice = Notice::find($id);
 
         if (!$notice) {
-            return response()->json(['message' => 'Notice not found'], 404);
+            return response()->json([
+                'message' => 'Notice not found'
+            ], 404);
         }
 
         $user = auth()->user();
