@@ -50,7 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/test-insert', function () {
     \App\Models\Notice::create([
         'title' => 'First Notice',
-        'description' => 'Testing notice'
+        'description' => 'Testing notice',
+        'created_by' => 1 // 👈 koi valid user id
     ]);
 
     return "Inserted";

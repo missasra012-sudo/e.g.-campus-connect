@@ -11,7 +11,6 @@ class NoticeController extends Controller
     public function index()
     {
         $notices = Notice::latest()->get();
-
         return response()->json($notices);
     }
 
@@ -30,6 +29,11 @@ class NoticeController extends Controller
     // ➕ Create notice (Protected)
     public function store(Request $request)
     {
+        // ✅ Check auth
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string'
@@ -37,7 +41,7 @@ class NoticeController extends Controller
 
         $user = auth()->user();
 
-        // only teacher/hod allowed
+        // ✅ Role check
         if (!in_array($user->role, ['teacher', 'hod'])) {
             return response()->json([
                 'message' => 'Unauthorized: Only teacher or HOD can create notice'
@@ -59,6 +63,11 @@ class NoticeController extends Controller
     // ✏️ Update notice
     public function update(Request $request, $id)
     {
+        // ✅ Check auth
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         $notice = Notice::find($id);
 
         if (!$notice) {
@@ -67,7 +76,7 @@ class NoticeController extends Controller
 
         $user = auth()->user();
 
-        // only creator or hod
+        // ✅ Only creator or HOD
         if ($user->id !== $notice->created_by && $user->role !== 'hod') {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -90,6 +99,11 @@ class NoticeController extends Controller
     // ❌ Delete notice
     public function destroy($id)
     {
+        // ✅ Check auth
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         $notice = Notice::find($id);
 
         if (!$notice) {
@@ -98,6 +112,7 @@ class NoticeController extends Controller
 
         $user = auth()->user();
 
+        // ✅ Only creator or HOD
         if ($user->id !== $notice->created_by && $user->role !== 'hod') {
             return response()->json([
                 'message' => 'Unauthorized'
