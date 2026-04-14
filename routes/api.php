@@ -49,12 +49,23 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::get('/test-insert', function () {
 
-    $user = \App\Models\User::first(); // 👈 first user le lo
+    $user = \App\Models\User::first();
+
+    // 👇 Agar user nahi hai to create karo
+    if (!$user) {
+        $user = \App\Models\User::create([
+            'name' => 'Admin',
+            'email' => 'admin@test.com',
+            'password' => bcrypt('123456'),
+            'role' => 'hod',
+            'status' => 'approved'
+        ]);
+    }
 
     \App\Models\Notice::create([
         'title' => 'First Notice',
         'description' => 'Testing notice',
-        'created_by' => $user->id // 👈 dynamic id
+        'created_by' => $user->id
     ]);
 
     return "Inserted";
