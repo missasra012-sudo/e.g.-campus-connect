@@ -48,10 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 Route::get('/test-insert', function () {
+
+    $user = \App\Models\User::first(); // 👈 first user le lo
+
     \App\Models\Notice::create([
         'title' => 'First Notice',
         'description' => 'Testing notice',
-        'created_by' => 1 // 👈 koi valid user id
+        'created_by' => $user->id // 👈 dynamic id
     ]);
 
     return "Inserted";
