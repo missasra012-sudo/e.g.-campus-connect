@@ -47,3 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // 🚪 Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+Route::get('/test-insert', function () {
+    \App\Models\Notice::create([
+        'title' => 'First Notice',
+        'description' => 'Testing notice'
+    ]);
+
+    return "Inserted";
+});
