@@ -18,13 +18,8 @@ Route::get('/notices/{id}', [NoticeController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
 
     // 👤 Profile
-    // 👤 Get Profile
     Route::get('/profile', [ProfileController::class, 'profile']);
-
-    // ✏️ Update Profile
     Route::put('/profile/update', [ProfileController::class, 'updateProfile']);
-
-    // 🔒 Change Password
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
                                                                            
     // 📢 Notices
