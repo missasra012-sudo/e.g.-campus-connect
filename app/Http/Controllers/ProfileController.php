@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
-
-   public function uploadProfile(Request $request)
 {
+   public function uploadProfile(Request $request)
+     {
     $request->validate([
         'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     ]);
@@ -35,4 +35,5 @@ class ProfileController extends Controller
     return response()->json([
         'message' => 'No image uploaded'
     ], 400);
+     }
 }
