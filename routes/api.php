@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // 👤 Profile
     Route::get('/profile', [ProfileController::class, 'profile']);
-    Route::put('/profile/update', [ProfileController::class, 'updateProfile']);
+    Route::put('/profile/update', [ProfileController::class, 'update']);
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
                                                                            
     // 📢 Notices
