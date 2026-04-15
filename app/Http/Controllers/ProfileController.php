@@ -6,30 +6,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
+
+   public function uploadProfile(Request $request)
 {
-    public function uploadProfile(Request $request)
-    {
-        $request->validate([
-            'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
+    $request->validate([
+        'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        $user = Auth::user();
+    $user = auth()->user();
 
-        if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('profile_images', 'public');
+    if ($request->hasFile('profile_image')) {
 
-            // save in DB
-            $user->profile_image = $path;
-            $user->save();
+        $file = $request->file('profile_image');
 
-            return response()->json([
-                'message' => 'Profile image uploaded successfully',
-                'image' => $path
-            ]);
-        }
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        $file->move(public_path('profile_images'), $filename);
+
+        $user->profile_image = url('profile_images/' . $filename);
+        $user->save();
 
         return response()->json([
-            'message' => 'Image not uploaded'
-        ], 400);
+            'message' => 'Profile image uploaded successfully',
+            'image_url' => $user->profile_image,
+        ]);
     }
+
+    return response()->json([
+        'message' => 'No image uploaded'
+    ], 400);
 }
