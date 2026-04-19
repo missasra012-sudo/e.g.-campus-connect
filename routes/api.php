@@ -24,13 +24,13 @@ Route::middleware('auth:sanctum')->group(function () {
                                                                            
     // 📢 Notices
     Route::post('/notices', [NoticeController::class, 'store']);
+    Route::post('/notices/upload-image', [NoticeController::class, 'uploadImage']);
     Route::put('/notices/{id}', [NoticeController::class, 'update']);
     Route::delete('/notices/{id}', [NoticeController::class, 'destroy']);
 
     // 🖼️ Images
     Route::get('/images', [ImageController::class, 'index']);
     Route::post('/images', [ImageController::class, 'store']);
-    Route::post('/upload-images',[ImageController::class, 'uploadimages']);
     Route::get('/images/{id}', [ImageController::class, 'show']);
     Route::put('/images/{id}', [ImageController::class, 'update']);
     Route::delete('/images/{id}', [ImageController::class, 'destroy']);
