@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Notice;
 
-
 class NoticeController extends Controller
 {
     // 📄 Get all notices (Public)
@@ -36,9 +35,8 @@ class NoticeController extends Controller
             'description' => 'required|string'
         ]);
 
-        $user = auth()->user(); // middleware se already authenticated
+        $user = auth()->user();
 
-        // ✅ Only teacher or HOD
         if (!in_array($user->role, ['teacher', 'hod'])) {
             return response()->json([
                 'message' => 'Unauthorized: Only teacher or HOD can create notice'
@@ -70,7 +68,6 @@ class NoticeController extends Controller
 
         $user = auth()->user();
 
-        // ✅ Only creator or HOD
         if ($user->id !== $notice->created_by && $user->role !== 'hod') {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -103,7 +100,6 @@ class NoticeController extends Controller
 
         $user = auth()->user();
 
-        // ✅ Only creator or HOD
         if ($user->id !== $notice->created_by && $user->role !== 'hod') {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -116,28 +112,28 @@ class NoticeController extends Controller
             'message' => 'Notice deleted successfully'
         ]);
     }
-}
-public function uploadImage(Request $request)
-{
-    // validation
-    $request->validate([
-        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
-    ]);
 
-    // image store
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+    // 🖼️ Upload Notice Image ✅ (FIXED POSITION)
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
 
-        $file->move(public_path('notice_images'), $filename);
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+
+            $file->move(public_path('notice_images'), $filename);
+
+            return response()->json([
+                'message' => 'Notice image uploaded successfully',
+                'image_url' => url('notice_images/'.$filename)
+            ]);
+        }
 
         return response()->json([
-            'message' => 'Notice image uploaded successfully',
-            'image_url' => url('notice_images/' . $filename)
-        ]);
+            'message' => 'No image uploaded'
+        ], 400);
     }
-
-    return response()->json([
-        'message' => 'No image uploaded'
-    ], 400);
 }
