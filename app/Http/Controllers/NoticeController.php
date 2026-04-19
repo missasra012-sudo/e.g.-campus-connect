@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Notice;
 
+
 class NoticeController extends Controller
 {
     // 📄 Get all notices (Public)
@@ -115,4 +116,28 @@ class NoticeController extends Controller
             'message' => 'Notice deleted successfully'
         ]);
     }
+}
+public function uploadImage(Request $request)
+{
+    // validation
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+    ]);
+
+    // image store
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        $file->move(public_path('notice_images'), $filename);
+
+        return response()->json([
+            'message' => 'Notice image uploaded successfully',
+            'image_url' => url('notice_images/' . $filename)
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'No image uploaded'
+    ], 400);
 }
