@@ -5,6 +5,7 @@ use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FeedbackController;
 
 // 🔐 AUTH
 Route::post('/register', [AuthController::class, 'register']);
@@ -42,4 +43,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // 📸 Profile Image
     Route::post('/upload-profile', [ProfileController::class, 'uploadProfile']);
+
+    // 💬 Feedback
+    Route::get('/feedbacks', [FeedbackController::class, 'index']);
+    Route::post('/feedbacks', [FeedbackController::class, 'store']);
+    Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
+    Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy']);
 });
