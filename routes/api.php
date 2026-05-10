@@ -6,17 +6,19 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\EventController;
 
-// 🔐 AUTH
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
 
-// 📢 PUBLIC
-Route::get('/notices', [NoticeController::class, 'index']);
-Route::get('/notices/{id}', [NoticeController::class, 'show']);
+     // 🔐 AUTH
+     Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 
-// 🔒 PROTECTED
-Route::middleware('auth:sanctum')->group(function () {
+     // 📢 PUBLIC
+     Route::get('/notices', [NoticeController::class, 'index']);
+    Route::get('/notices/{id}', [NoticeController::class, 'show']);
+
+     // 🔒 PROTECTED
+     Route::middleware('auth:sanctum')->group(function () {
 
     // 👤 Profile
     Route::get('/profile', [ProfileController::class, 'profile']);
@@ -49,4 +51,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
     Route::get('/feedbacks/{id}', [FeedbackController::class, 'show']);
     Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy']);
+
+    // 📅 Public Event APIs
+    Route::get('/events', [EventController::class, 'index']);
+    Route::get('/events/{id}', [EventController::class, 'show']);
+
+    // 📅 Event APIs
+    Route::post('/events', [EventController::class, 'store']);
+    Route::put('/events/{id}', [EventController::class, 'update']);
+    Route::delete('/events/{id}', [EventController::class, 'destroy']);
+    Route::post('/events/upload-image', [EventController::class, 'uploadImage']);
 });
