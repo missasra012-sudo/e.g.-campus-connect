@@ -7,7 +7,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\EventController;
-
+use App\Http\Controllers\NoteController;
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -61,4 +61,10 @@ use App\Http\Controllers\EventController;
     Route::put('/events/{id}', [EventController::class, 'update']);
     Route::delete('/events/{id}', [EventController::class, 'destroy']);
     Route::post('/events/upload-image', [EventController::class, 'uploadImage']);
+    
+    // 📚 Notes APIs
+    Route::get('/notes', [NoteController::class, 'index']);
+    Route::post('/notes', [NoteController::class, 'store']);
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
+
 });
