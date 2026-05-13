@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\MessageController;
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -66,5 +67,9 @@ use App\Http\Controllers\NoteController;
     Route::get('/notes', [NoteController::class, 'index']);
     Route::post('/notes', [NoteController::class, 'store']);
     Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
+
+    // 💬 Chat APIs
+    Route::post('/messages', [MessageController::class, 'sendMessage']);
+    Route::get('/messages', [MessageController::class, 'getMessages']);
 
 });
