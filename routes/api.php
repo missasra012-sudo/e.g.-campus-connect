@@ -13,7 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\CourseController;
-
+use App\Http\Controllers\AttendanceController;
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -92,4 +92,7 @@ use App\Http\Controllers\CourseController;
     Route::post('/courses', [CourseController::class, 'store']);
     Route::get('/courses', [CourseController::class, 'index']);
 
+    // 📅 Attendance APIs
+    Route::post('/attendance', [AttendanceController::class, 'markAttendance']);
+    Route::get('/attendance', [AttendanceController::class, 'getAttendance']);
 });
