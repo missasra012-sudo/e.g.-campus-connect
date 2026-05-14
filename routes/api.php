@@ -14,6 +14,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AssignmentController;
+
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -95,4 +97,9 @@ use App\Http\Controllers\AttendanceController;
     // 📅 Attendance APIs
     Route::post('/attendance', [AttendanceController::class, 'markAttendance']);
     Route::get('/attendance', [AttendanceController::class, 'getAttendance']);
+
+    // 📝 Assignment APIs
+    Route::post('/assignments', [AssignmentController::class, 'uploadAssignment']);
+    Route::get('/assignments', [AssignmentController::class, 'getAssignments']);
+    Route::post('/assignments/submit', [AssignmentController::class, 'submitAssignment']);
 });
