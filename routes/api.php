@@ -9,6 +9,7 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\DashboardController;
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -46,7 +47,10 @@ use App\Http\Controllers\MessageController;
 
     // 📸 Profile Image
     Route::post('/upload-profile', [ProfileController::class, 'uploadProfile']);
-
+    
+    // 📊 Dashboard
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+    
     // 💬 Feedback
     Route::get('/feedbacks', [FeedbackController::class, 'index']);
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
