@@ -10,6 +10,8 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
+
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -75,5 +77,9 @@ use App\Http\Controllers\DashboardController;
     // 💬 Chat APIs
     Route::post('/messages', [MessageController::class, 'sendMessage']);
     Route::get('/messages', [MessageController::class, 'getMessages']);
+    
+    // 🔔 Notification APIs
+    Route::post('/notifications', [NotificationController::class, 'send']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
 
 });
