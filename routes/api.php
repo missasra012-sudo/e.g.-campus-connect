@@ -11,6 +11,8 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\CourseController;
 
 
      // 🔐 AUTH
@@ -81,5 +83,13 @@ use App\Http\Controllers\NotificationController;
     // 🔔 Notification APIs
     Route::post('/notifications', [NotificationController::class, 'send']);
     Route::get('/notifications', [NotificationController::class, 'index']);
+
+    // 🏢 Departments
+    Route::post('/departments', [DepartmentController::class, 'store']);
+    Route::get('/departments', [DepartmentController::class, 'index']);
+
+    // 📚 Courses
+    Route::post('/courses', [CourseController::class, 'store']);
+    Route::get('/courses', [CourseController::class, 'index']);
 
 });
