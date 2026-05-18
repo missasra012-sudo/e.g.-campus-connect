@@ -15,7 +15,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AssignmentController;
-
+use App\Http\Controllers\ResultController;
 
      // 🔐 AUTH
      Route::post('/register', [AuthController::class, 'register']);
@@ -102,4 +102,11 @@ use App\Http\Controllers\AssignmentController;
     Route::post('/assignments', [AssignmentController::class, 'uploadAssignment']);
     Route::get('/assignments', [AssignmentController::class, 'getAssignments']);
     Route::post('/assignments/submit', [AssignmentController::class, 'submitAssignment']);
+
+    // 📊 Results
+    Route::post('/results', [ResultController::class, 'store']);
+    Route::get('/results', [ResultController::class, 'index']);
+    Route::get('/results/student/{student_id}', [ResultController::class, 'studentResult']);
+    Route::delete('/results/{id}', [ResultController::class, 'destroy']);
+
 });
